@@ -255,13 +255,23 @@ app
         );
       }
 
-      // Validate language codes
-      const sourceLang = params.source_lang
-        ? validateLanguageCode(params.source_lang)
-        : "auto";
-      const targetLang = params.target_lang
-        ? validateLanguageCode(params.target_lang)
-        : "en";
+      // Normalize language codes before validation (handle zh-TW, zh-CN, auto, etc.)
+      const rawSourceLang = (params.source_lang || "auto")
+        .toLowerCase()
+        .replace("zh-tw", "zh")
+        .replace("zh-cn", "zh")
+        .replace("zh-hant", "zh")
+        .replace("zh-hans", "zh");
+      
+      const rawTargetLang = (params.target_lang || "en")
+        .toLowerCase()
+        .replace("zh-tw", "zh")
+        .replace("zh-cn", "zh")
+        .replace("zh-hant", "zh")
+        .replace("zh-hans", "zh");
+      
+      const sourceLang = validateLanguageCode(rawSourceLang) || "auto";
+      const targetLang = validateLanguageCode(rawTargetLang) || "en";
 
       if (!sourceLang || !targetLang) {
         return c.json(
