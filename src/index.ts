@@ -93,14 +93,27 @@ async function handleTranslation(c: any, provider: "deepl" | "google") {
       return c.json(createStandardResponse(400, null), 400);
     }
 
-    // Validate and sanitize language parameters
+    // Normalize before validation to handle zh-TW, ZH-HANT, zh-CN, etc.
+    function normalizeInput(code: string): string {
+      return code
+        .toUpperCase()
+        .replace("ZH-HANT", "ZH")
+        .replace("ZH-HANS", "ZH")
+        .replace("ZH-TW", "ZH")
+        .replace("ZH-CN", "ZH")
+        .replace("PT-BR", "PT")
+        .replace("PT-PT", "PT")
+        .replace("EN-US", "EN")
+        .replace("EN-GB", "EN");
+    }
+    
     const sourceLang = params.source_lang
-      ? validateLanguageCode(params.source_lang)
+      ? validateLanguageCode(normalizeInput(params.source_lang))
       : "auto";
     const targetLang = params.target_lang
-      ? validateLanguageCode(params.target_lang)
+      ? validateLanguageCode(normalizeInput(params.target_lang))
       : "en";
-
+    
     if (!sourceLang || !targetLang) {
       return c.json(createStandardResponse(400, null), 400);
     }
