@@ -4,7 +4,6 @@
 
 import { Hono } from "hono";
 import {
-  clearMemoryCache,
   generateCacheKey,
   getCachedTranslation,
   query,
@@ -36,38 +35,11 @@ function isDebugModeEnabled(value?: string): boolean {
 }
 
 /**
- * Scheduled event handler for periodic maintenance tasks
- * Executes every 5 minutes as configured in wrangler.jsonc
- * @param event The scheduled event object
- * @param env Environment bindings
- * @param ctx Execution context for background tasks
- */
-function scheduled(
-  event: ScheduledEvent,
-  env: Env,
-  ctx: ExecutionContext
-): void {
-  ctx.waitUntil(handleScheduled(event, env));
-}
-
-/**
- * Handle scheduled maintenance tasks
- * Performs cache cleanup and other periodic maintenance
- * @param event The scheduled event object
- * @param env Environment bindings
- */
-async function handleScheduled(event: ScheduledEvent, env: Env): Promise<void> {
-  // Clear the in-memory cache every 5 minutes to prevent memory leaks
-  clearMemoryCache();
-}
-
-/**
  * Worker export configuration
- * Defines the main fetch handler and scheduled event handler
+ * Defines the main fetch handler
  */
 const worker = {
   fetch: app.fetch,
-  scheduled,
 };
 
 export default worker;
